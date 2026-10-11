@@ -1,0 +1,24 @@
+{
+  "backend_url": "http://localhost:8001/webhook",
+  "agents": {
+    "0": {
+      "token": "5_hwxlrYDFiP8NRUQKHRG6DIthMJTXyA-RUpQ64yDBQ",
+      "name": "Legacy"
+    },
+    "1": {
+      "token": "ojnwQltPgEPEmjt0bqyyyHSPHWfp8VB4xB3vjh3Q2Jg",
+      "name": "Bavave",
+      "role": "admin"
+    },
+    "2": {
+      "token": "2sfoW1HwgJ3wTr4yes-0123MJkd_Z5DbH8v-fSKH_Gw",
+      "name": "Swift Haulers",
+      "role": "agent"
+    },
+    "3": {
+      "token": "RlPM4EJ2BApyDo6_0UiUOqAiVZJN2JbCb94wakKrX7w",
+      "name": "Rapid Dispatch",
+      "role": "agent"
+    }
+  }
+}

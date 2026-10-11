@@ -1,0 +1,171 @@
+{"ts": 1790974888.189, "level": "info", "event": "auto_reply_toggled", "enabled": false}
+{"ts": 1790975163.285, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 3, "chars_out": 3}
+{"ts": 1790975163.328, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "paused"}
+{"ts": 1790975172.443, "level": "info", "event": "auto_reply_toggled", "enabled": true}
+{"ts": 1790975194.634, "level": "info", "event": "held_sent"}
+{"ts": 1790975228.442, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 16, "chars_out": 57}
+{"ts": 1790975228.487, "level": "info", "event": "auto_reply", "chat": "305ea5d4"}
+{"ts": 1791103080.014, "level": "info", "event": "auto_reply_toggled", "enabled": false}
+{"ts": 1791103556.172, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 3, "chars_out": 3}
+{"ts": 1791103556.207, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "paused"}
+{"ts": 1791103570.299, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 7, "chars_out": 9}
+{"ts": 1791103570.337, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "paused"}
+{"ts": 1791103588.942, "level": "info", "event": "auto_reply_toggled", "enabled": true}
+{"ts": 1791103601.926, "level": "info", "event": "held_sent"}
+{"ts": 1791103603.932, "level": "info", "event": "held_sent"}
+{"ts": 1791103613.928, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 11, "chars_out": 57}
+{"ts": 1791103613.975, "level": "info", "event": "auto_reply", "chat": "305ea5d4"}
+{"ts": 1791106940.044, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791106972.542, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791107037.261, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791107093.194, "level": "info", "event": "auto_reply_toggled", "enabled": false}
+{"ts": 1791107123.697, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 3, "chars_out": 3}
+{"ts": 1791107123.75, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "paused"}
+{"ts": 1791107142.05, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791107411.685, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791107794.421, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791145654.602, "level": "error", "event": "speak_failed", "error": "NoAudioReceived"}
+{"ts": 1791147214.005, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791147246.964, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791147465.092, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147465.949, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147468.862, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147471.193, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147474.666, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147476.608, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147479.105, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147483.054, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147490.199, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147647.661, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147695.11, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147733.905, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147822.347, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791147838.315, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791148267.35, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791148587.95, "level": "error", "event": "transcribe_failed", "error": "ValueError"}
+{"ts": 1791148784.079, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791149712.005, "level": "error", "event": "transcribe_failed", "error": "ValueError"}
+{"ts": 1791149793.606, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791149825.428, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791149875.598, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791183773.286, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791190082.337, "level": "info", "event": "auto_reply_toggled", "enabled": true}
+{"ts": 1791190337.238, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 3, "chars_out": 3}
+{"ts": 1791190337.296, "level": "info", "event": "auto_reply", "chat": "305ea5d4"}
+{"ts": 1791190361.243, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 9, "chars_out": 24}
+{"ts": 1791190361.293, "level": "info", "event": "auto_reply", "chat": "305ea5d4"}
+{"ts": 1791190393.407, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 35, "chars_out": 57}
+{"ts": 1791190393.452, "level": "info", "event": "auto_reply", "chat": "305ea5d4"}
+{"ts": 1791190510.707, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "voice", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 31, "chars_out": 11}
+{"ts": 1791190510.747, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "needs_owner"}
+{"ts": 1791190548.728, "level": "info", "event": "held_sent"}
+{"ts": 1791190581.102, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "voice", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 22, "chars_out": 11}
+{"ts": 1791190581.133, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "needs_owner"}
+{"ts": 1791190822.959, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 21, "chars_out": 31}
+{"ts": 1791190823.002, "level": "info", "event": "held", "chat": "305ea5d4", "reason": "needs_owner"}
+{"ts": 1791190831.781, "level": "info", "event": "verify", "chat": "305ea5d4", "type": "image", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 74, "chars_out": 17}
+{"ts": 1791190831.829, "level": "info", "event": "auto_reply", "chat": "305ea5d4"}
+{"ts": 1791191280.595, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791191343.213, "level": "info", "event": "dashboard_send", "kind": "location"}
+{"ts": 1791272662.974, "level": "info", "event": "direct_send_toggled", "enabled": false}
+{"ts": 1791272667.821, "level": "info", "event": "auto_reply_toggled", "enabled": false}
+{"ts": 1791272670.52, "level": "info", "event": "auto_reply_toggled", "enabled": true}
+{"ts": 1791272730.211, "level": "info", "event": "direct_send_toggled", "enabled": true}
+{"ts": 1791273376.625, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 2, "chars_out": 3}
+{"ts": 1791273376.636, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791273387.9, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 11, "chars_out": 33}
+{"ts": 1791273387.911, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791273412.963, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 2, "chars_out": 3}
+{"ts": 1791273412.972, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791273596.369, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 2, "chars_out": 3}
+{"ts": 1791273596.381, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791273614.843, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 24, "chars_out": 27}
+{"ts": 1791273614.85, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791273636.361, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 44, "chars_out": 88}
+{"ts": 1791273636.37, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791273662.02, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 12, "chars_out": 100}
+{"ts": 1791273662.029, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791273683.165, "level": "info", "event": "held_sent"}
+{"ts": 1791273693.445, "level": "info", "event": "held_sent"}
+{"ts": 1791273716.43, "level": "info", "event": "direct_send_toggled", "enabled": false}
+{"ts": 1791273717.696, "level": "info", "event": "auto_reply_toggled", "enabled": false}
+{"ts": 1791273719.977, "level": "info", "event": "auto_reply_toggled", "enabled": true}
+{"ts": 1791273730.879, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 11, "chars_out": 3}
+{"ts": 1791273730.889, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791273767.734, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 40, "chars_out": 39}
+{"ts": 1791273767.743, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274364.714, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "voice", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 10, "chars_out": 14}
+{"ts": 1791274364.727, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274370.105, "level": "warning", "event": "whatsapp_tts_failed", "chat": "13c0c1b3", "error": "WSServerHandshakeError"}
+{"ts": 1791274491.579, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "voice", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 0, "chars_out": 3}
+{"ts": 1791274491.595, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274493.27, "level": "warning", "event": "whatsapp_tts_failed", "chat": "13c0c1b3", "error": "WSServerHandshakeError"}
+{"ts": 1791274752.142, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 9, "chars_out": 24}
+{"ts": 1791274752.152, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274762.823, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 10, "chars_out": 16}
+{"ts": 1791274762.833, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274779.868, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 20, "chars_out": 39}
+{"ts": 1791274779.878, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274800.756, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 25, "chars_out": 54}
+{"ts": 1791274800.764, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791274815.194, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 9, "chars_out": 34}
+{"ts": 1791274815.203, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791274854.951, "level": "info", "event": "held_sent"}
+{"ts": 1791694262.337, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791694263.039, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791694266.468, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791694267.216, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791694517.108, "level": "info", "event": "direct_send_toggled", "enabled": true}
+{"ts": 1791694770.157, "level": "info", "event": "mode_changed", "mode": "hold"}
+{"ts": 1791695014.267, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 2, "chars_out": 6}
+{"ts": 1791695014.279, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791695041.298, "level": "info", "event": "mode_changed", "mode": "auto"}
+{"ts": 1791695057.632, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791695058.652, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791695058.655, "level": "warning", "event": "openai_tts_failed", "error": "TypeError"}
+{"ts": 1791695059.368, "level": "error", "event": "speak_failed", "error": "WSServerHandshakeError"}
+{"ts": 1791695075.977, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 13, "chars_out": 16}
+{"ts": 1791695075.988, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791695138.75, "level": "error", "event": "transcribe_failed", "error": "ValueError"}
+{"ts": 1791695142.625, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 2, "chars_out": 6}
+{"ts": 1791695142.637, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791695157.116, "level": "error", "event": "transcribe_failed", "error": "ValueError"}
+{"ts": 1791695533.179, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 18, "chars_out": 28}
+{"ts": 1791695533.188, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791695550.463, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 18, "chars_out": 28}
+{"ts": 1791695550.471, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791695709.534, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 18, "chars_out": 28}
+{"ts": 1791695709.543, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791696010.463, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 18, "chars_out": 23}
+{"ts": 1791696010.471, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791696030.243, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 23, "chars_out": 29}
+{"ts": 1791696030.251, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791696049.096, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 21, "chars_out": 35}
+{"ts": 1791696049.104, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791696079.1, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 27, "chars_out": 36}
+{"ts": 1791696079.108, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791696113.976, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 68, "chars_out": 49}
+{"ts": 1791696113.984, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791696510.181, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 9, "chars_out": 65}
+{"ts": 1791696510.188, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791696538.265, "level": "error", "event": "webhook_agent_failed", "chat": "13c0c1b3", "error": "ValueError"}
+{"ts": 1791696567.161, "level": "info", "event": "held_sent"}
+{"ts": 1791696592.493, "level": "error", "event": "webhook_agent_failed", "chat": "13c0c1b3", "error": "ValueError"}
+{"ts": 1791696732.423, "level": "info", "event": "verify", "chat": "255c5983", "type": "voice", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 3, "chars_out": 6}
+{"ts": 1791697022.385, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "voice", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 33, "chars_out": 14}
+{"ts": 1791697022.396, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791697223.784, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "voice", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 23, "chars_out": 14}
+{"ts": 1791697223.793, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
+{"ts": 1791697592.687, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791697677.417, "level": "info", "event": "dashboard_send", "kind": "text"}
+{"ts": 1791700953.819, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 54, "chars_out": 44}
+{"ts": 1791700953.843, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791701012.811, "level": "info", "event": "held_sent"}
+{"ts": 1791701099.686, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 69, "chars_out": 50}
+{"ts": 1791701099.695, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791701127.965, "level": "info", "event": "held_sent"}
+{"ts": 1791701166.518, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "text", "grounded": true, "needs_owner": true, "action": "hold", "reason": "needs_owner", "chars_in": 55, "chars_out": 28}
+{"ts": 1791701166.53, "level": "info", "event": "held", "chat": "13c0c1b3", "reason": "needs_owner"}
+{"ts": 1791701196.706, "level": "info", "event": "held_sent"}
+{"ts": 1791701246.709, "level": "info", "event": "verify", "chat": "13c0c1b3", "type": "voice", "grounded": true, "needs_owner": false, "action": "send", "reason": "", "chars_in": 23, "chars_out": 14}
+{"ts": 1791701246.726, "level": "info", "event": "auto_reply", "chat": "13c0c1b3"}
