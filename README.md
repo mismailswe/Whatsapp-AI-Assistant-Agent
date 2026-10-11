@@ -1,18 +1,18 @@
-# WhatsApp Assistant Agent
+# WhatsApp AI Assistant Agent
 
-An AI assistant that answers my WhatsApp messages in my own voice (Egyptian Arabic, Franco-Arabic and English),
-**and holds anything it isn't sure about for my approval instead of guessing.**
+**AI customer service for logistics companies on WhatsApp** — multiple agents, one operations dashboard, and human approval when the AI should not guess.
 
-> The goal is not "reply to everything". It is: **never say something I wouldn't say.**
+Each agent links their **business WhatsApp** by scanning a **QR code** in the dashboard. Incoming chats get AI-drafted replies grounded in your company notes; sensitive topics (bookings, payments, commitments) go to a **held queue** for a human to approve.
 
-<!-- Add a short demo here: ![demo](docs/demo.gif) -->
+> The goal is not “reply to everything.” It is: **reply like the company would — and hold the rest.**
 
 ## Contents
 
 - [What it does](#what-it-does)
+- [Roles and flow](#roles-and-flow)
 - [How a message is decided](#how-a-message-is-decided)
 - [Architecture](#architecture)
-- [The dashboard and Mika](#the-dashboard-and-mika)
+- [The dashboard](#the-dashboard)
 - [Safety design](#safety-design)
 - [Privacy and data flow](#privacy-and-data-flow)
 - [Setup](#setup)
@@ -20,253 +20,246 @@ An AI assistant that answers my WhatsApp messages in my own voice (Egyptian Arab
 - [Tests and evaluation](#tests-and-evaluation)
 - [Project structure](#project-structure)
 - [Known limits](#known-limits)
-- [Roadmap](#roadmap)
+- [More docs](#more-docs)
 
 ## What it does
 
-**On WhatsApp**
+**On WhatsApp (per agent line)**
 
-- Replies to incoming messages in my writing style (short, casual, feminine forms, no punctuation), matching the sender's language and script.
-- Answers questions about my work and schedule **only from facts I wrote down** (`data/kb/about_me.md`), such as what I do, what projects I take, and where I am at a given time.
-- Understands **voice notes** (faster-whisper) and **photos** (BLIP captions), and reacts like a friend would.
-- **Holds** anything uncertain, personal, or a commitment (invitations, "confirm", "pay") for my approval, and shows me why.
-- Optionally retrieves similar past replies from my own chat exports, so the tone stays close to how I really write.
+- Answers customer messages using your **knowledge base** and schedule (`data/kb/`), not invented facts.
+- Matches the customer’s language when `REPLY_LANGUAGE=match` (e.g. English, Urdu, Roman Urdu).
+- Handles **voice notes** (faster-whisper) and **photos** (BLIP captions); optional **voice replies** on WhatsApp.
+- **Auto-sends** when the reply is grounded and safe; **holds** meetings, payments, private details, or anything the model flags as needing a human.
+- Optional style retrieval from past chat examples (`data/style_examples.md`).
 
-**In the dashboard** (a web page I open from my laptop or phone)
+**In the dashboard** (web UI for admin and agents)
 
-- Approve, edit, send or dismiss held replies.
-- Pause all auto-replies with one switch, or set any contact to _reply automatically_, _always ask me first_, or _ignore_.
-- Chat with **Mika**, a dashboard assistant that can send messages, draft messages, send my location, and list or read out the messages I received.
-- Talk to Mika: dictate, say the wake word, and hear answers spoken back.
-- Browse a message history and an activity log.
+- **Register company** and sign in with **email + password** (admin and agents).
+- **Team** — admin adds customer-service agents (each gets their own login).
+- **WhatsApp** — each agent opens their tab, shows **QR code**, scans on the phone that owns that business line.
+- **Held** — approve, edit, send, or dismiss queued replies with reasons.
+- **Messages** — full in/out log (admin sees the org; scoped per agent where applicable).
+- **Activity** — audit trail of sends, holds, and setting changes.
+- **Chat** — internal assistant (**Mika**) to draft sends, list messages, and voice controls (optional).
+- Global **auto-reply** kill switch and per-contact modes (automatic / ask first / ignore).
+
+See [docs/LOGISTICS_MULTI_TENANT.md](docs/LOGISTICS_MULTI_TENANT.md) for the admin + agent workflow in detail.
+
+## Roles and flow
+
+| Role | Responsibilities |
+|------|------------------|
+| **Company admin** | Register the organization, add agents, monitor all messages, held items, and activity |
+| **Agent** | Sign in, link WhatsApp via QR, serve customers on that number with the same AI + voice pipeline |
+
+Typical flow:
+
+1. Admin registers **ABC Logistics** and signs in.
+2. **Team** → create agents (name, email, password).
+3. Each agent signs in → **WhatsApp** → **Show QR code** → scan on their business phone.
+4. Customers message that line → webhook → AI reply or **held** for approval.
+5. Admin uses **Messages** / **Held** / **Activity** to oversee the team.
+
+One WhatsApp number per agent session (separate `LocalAuth` data under `whatsapp-bridge/`). Webhook routing uses per-agent bridge tokens in `data/bridge_agents.json` (generated automatically).
 
 ## How a message is decided
 
-One model call returns the reply plus two flags. The decision to send is plain code, not model judgment:
+One model call returns the reply plus two flags. Sending is plain code, not model judgment:
 
 ```text
 send automatically  =  reply is not empty  AND  grounded  AND  NOT needs_owner
 ```
 
-| Flag          | Meaning                                                                                                                                                                            |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `grounded`    | Every fact in the reply comes from the prompt: my notes, my schedule, the current time, or the conversation. False if the model had to guess anything about me.                    |
-| `needs_owner` | Only I can answer: a decision, private information, a detailed project discussion, a complicated technical issue, or any invitation or request to attend, confirm, promise or pay. |
+| Flag | Meaning |
+|------|---------|
+| `grounded` | Facts come from the prompt: company notes, schedule, time, or the conversation — not guesses. |
+| `needs_owner` | Human-only: decisions, private info, invitations, confirm/pay/commitment language, or complex cases. |
 
-When there is doubt, the default is **hold**. Reasons shown in the dashboard:
+When in doubt, the default is **hold**. Common reasons in the dashboard:
 
-| Reason                                      | Cause                                    |
-| ------------------------------------------- | ---------------------------------------- |
-| Needs you to answer                         | `needs_owner` was true                   |
-| May contain a fact it wasn't sure about     | `grounded` was false                     |
-| The model gave no usable answer             | Empty or malformed output (fails closed) |
-| Auto-reply was paused                       | The global kill switch is on             |
-| This contact is set to always ask you first | Per-contact mode                         |
+| Reason | Cause |
+|--------|--------|
+| Needs you to answer | `needs_owner` was true |
+| May contain an unverified fact | `grounded` was false |
+| No usable model output | Empty or malformed (fails closed) |
+| Auto-reply paused | Global kill switch |
+| Contact set to ask first | Per-contact mode |
 
-The two flags are self-reported by the model, so they are a signal, not a guarantee. That is why there is an
-[evaluation set](#tests-and-evaluation) that checks what actually gets sent.
+Flags are self-reported; use the [evaluation set](#tests-and-evaluation) to measure real send/hold behavior.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    W[WhatsApp] <--> B["Bridge<br/>whatsapp-web.js"]
-    B -- "message + shared secret" --> A["FastAPI /webhook"]
-    A --> C{"Allowed?<br/>Contact mode?"}
-    C -- "ignore / not allowed" --> X[Drop]
-    C --> G
-    subgraph G["Agent graph (LangGraph)"]
+    C[Customer] --> W[WhatsApp]
+    W <--> B["Bridge<br/>whatsapp-web.js<br/>one session per agent"]
+    B -- "message + agent token" --> A["FastAPI /webhook"]
+    A --> G{"Allowed?<br/>Contact mode?"}
+    G -- "ignore / not allowed" --> X[Drop]
+    G --> P
+    subgraph P["Agent graph (LangGraph)"]
         direction LR
-        S["Voice: Whisper<br/>Photo: BLIP"] --> H["Conversation<br/>history"] --> L["LLM + notes +<br/>schedule + style"] --> V["Verify"]
+        S["Voice: Whisper<br/>Photo: BLIP"] --> H["History<br/>scoped by agent"] --> L["LLM + KB +<br/>schedule"] --> V["Verify"]
     end
-    V -- "grounded and no owner needed" --> B
-    V -- "otherwise, or paused" --> Q[("Held queue<br/>SQLite")]
-    Q --> D["Dashboard"]
-    D -- "item id only" --> B
+    V -- "safe to send" --> B
+    V -- "else or paused" --> Q[("Held queue<br/>SQLite")]
+    Q --> D["Dashboard<br/>admin + agents"]
+    D -- "approve / send" --> B
 ```
 
-| Part                                                                                                | Role                                                                                                                                                                          |
-| --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Bridge** (`whatsapp-bridge/`)                                                                     | A thin Node layer that receives messages and sends replies. Resolves privacy `@lid` ids to phone numbers. Its send API listens on `127.0.0.1` only and needs a shared secret. |
-| **Agent** (`app/agent_graph.py`, `app/llm.py`)                                                      | LangGraph pipeline: resolve voice or image to text, load history, generate the JSON answer, verify.                                                                           |
-| **Backend** (`app/main.py`)                                                                         | FastAPI webhook, allowlist, contact modes, kill switch, message log.                                                                                                          |
-| **Dashboard** (`app/dashboard.html`, `dashboard.py`, `assistant.py`, `controls.py`, `approvals.py`) | Login, held queue, controls, Mika, messages, activity.                                                                                                                        |
+| Part | Role |
+|------|------|
+| **Bridge** (`whatsapp-bridge/`) | Node layer: multi-agent QR sessions (`BRIDGE_MULTI=true`), forwards messages to the backend with the correct secret. Send API on `127.0.0.1` only. |
+| **Agent** (`app/agent_graph.py`, `app/llm.py`) | LangGraph: STT/vision → history → LLM JSON reply → send vs hold. |
+| **Backend** (`app/main.py`) | Webhook, allowlist, contact modes, kill switch, message log, agent scoping. |
+| **Auth & team** (`app/users.py`, `app/team.py`, `app/auth_context.py`) | Company registration, agent accounts, QR image API for linking. |
+| **Dashboard** (`app/dashboard.html`, `dashboard.py`, …) | Login, team, WhatsApp QR, held queue, messages, activity, Mika. |
 
-## The dashboard and Mika
+## The dashboard
 
-| Tab          | Purpose                                                                            |
-| ------------ | ---------------------------------------------------------------------------------- |
-| **Chat**     | Talk to Mika by typing, dictating or voice                                         |
-| **Held**     | Replies waiting for approval, each with its reason. Edit, send or dismiss          |
-| **Messages** | Received and sent messages, filtered by contact, day and direction. No AI involved |
-| **Activity** | An audit log of automatic replies, holds, approvals and setting changes            |
-| **Contacts** | Per-contact mode: automatic, always ask me first, or ignore                        |
+| Tab | Purpose |
+|-----|---------|
+| **Chat** | Internal assistant (Mika): draft messages, list/read messages, voice (optional) |
+| **Held** | Replies waiting for approval, with reason — edit, send, or dismiss |
+| **Messages** | Received and sent messages by contact and day |
+| **Activity** | Audit log |
+| **Team** | Admin: add/remove agents |
+| **WhatsApp** | Agent: connection status and **QR code** to link a business line |
+| **Contacts** | Per-contact mode: automatic, ask first, or ignore |
 
-Header switches: **Auto-reply** (kill switch), **Direct send**, **Voice chat**, and **Say Mika** (hands-free).
-
-**Things you can say to Mika** (Arabic or English):
-
-- "tell Mom I'm on my way" sends immediately when Direct send is on.
-- "write a message to Mom saying I'll be late" shows a draft to review.
-- "who messaged me today?" lists and reads out each message with the sender's name.
-- "what did Mom send today?" does the same for one contact.
-- "send my location to Mom" sends the position of the device the dashboard is open on.
-
-**Voice**
-
-- _Dictation:_ faster-whisper on the server, with automatic Arabic or English detection.
-- _Spoken replies:_ free Microsoft voices (edge-tts) by default, or an instructable OpenAI voice with `TTS_PROVIDER=openai`.
-- _Wake word_ ("Mika"): uses the browser's speech service in Chrome or Edge; the question itself is transcribed by Whisper.
-- An animated orb shows when Mika is listening, thinking or speaking.
-
-Listing messages is a database query: **the model never reads message contents and it costs no tokens**. The page reads them aloud itself.
+Header: **Auto-reply**, **Direct send**, voice options. Legacy single-password login still works if no company account exists (`DASHBOARD_PASSWORD` only).
 
 ## Safety design
 
-| Risk                                                | Decision                                                                                                                                                 |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| The model invents a fact                            | Facts may only come from `about_me.md` and the schedule. Malformed or missing flags fail closed into a hold.                                             |
-| The model grades its own answer                     | The flags are measured against an evaluation set rather than trusted.                                                                                    |
-| A contact's message tries to instruct the assistant | The dashboard assistant never sees incoming chats, so contacts cannot reach its tools.                                                                   |
-| The browser is used to message arbitrary numbers    | Dashboard sends are limited to names in `contacts.json`. Approving a held reply sends only an item id; the chat id comes from the database.              |
-| A reply is sent twice                               | Held items move `pending → sending → sent` in one atomic SQL update.                                                                                     |
-| Someone finds the tunnel URL                        | Password login, signed `HttpOnly` `SameSite=Strict` cookie, per-IP lockout. `/webhook` requires the bridge secret. The bridge listens on localhost only. |
-| Direct send commits me to a wrong message           | It can be switched off. Only exact names from `contacts.json` are valid, and the sent text is shown (and read back after a spoken request).              |
-| Logs leak private chats                             | Structured logs hold flags, sizes and an anonymised chat id, never message text, numbers or coordinates.                                                 |
+| Risk | Mitigation |
+|------|------------|
+| Invented company facts | Ground replies in KB and schedule; ungrounded → hold |
+| Risky auto-send | `needs_owner` for commitments, money, private data; fail closed on bad JSON |
+| Cross-agent data leaks | Messages and history scoped by `agent_id` / org in the database |
+| Unauthorized dashboard use | Email/password sessions; signed cookies; lockout; webhook requires bridge token |
+| Double send on approve | Held items: atomic `pending → sending → sent` in SQLite |
+| Arbitrary sends from UI | Sends tied to stored chat ids; contact names from `contacts.json` where used |
+
+Structured logs avoid storing full message bodies in log lines where possible.
 
 ## Privacy and data flow
 
-| Data                                                           | Where it goes                                                                                                  |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Incoming message text, my notes, schedule, recent conversation | **OpenAI API** (to write the reply)                                                                            |
-| Voice notes, photos, embeddings                                | Processed **locally** (faster-whisper, BLIP, sentence-transformers)                                            |
-| Held replies, conversation memory, message history, audit log  | **Local SQLite** (`data/assistant.db`). Message history is deleted after `MESSAGE_RETENTION_DAYS` (default 30) |
-| Mika's spoken replies (text only)                              | Microsoft's online voice service (edge-tts), or OpenAI if `TTS_PROVIDER=openai`                                |
-| Microphone audio for the wake word                             | The browser's speech service (Chrome or Edge), **only while "Say Mika" is on**                                 |
+| Data | Where it goes |
+|------|----------------|
+| Message text, KB, schedule, recent conversation | **OpenAI API** (reply generation) |
+| Voice, photos, optional embeddings | **Local** (faster-whisper, BLIP, sentence-transformers) |
+| Held queue, history, audit | **Local SQLite** (`data/assistant.db`) |
+| Dashboard TTS | edge-tts (default) or OpenAI if configured |
 
-Only chosen contacts are answered (`ALLOWED_CONTACTS`). Anyone talking to the assistant is talking to software that
-imitates me, so I keep it for practical messages and hold personal ones.
+Restrict who gets auto-replies with **`ALLOWED_CONTACTS`** (empty = all customers; set numbers to limit). Customers are talking to software acting on behalf of the company — use holds for anything sensitive.
 
 ## Setup
 
-**Requirements:** Python 3.11+, Node.js 20+, an OpenAI API key, and an HTTPS tunnel (such as Cloudflare Tunnel or
-ngrok) if you want the microphone or location in the dashboard from another device.
+**Requirements:** Python 3.11+, Node.js 20+, OpenAI API key. Use an HTTPS tunnel (Cloudflare, ngrok) if you open the dashboard from another device (microphone / location).
 
 ```bash
 # backend
-python -m venv venv && source venv/bin/activate     # Windows: venv\Scripts\activate
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # bridge
 cd whatsapp-bridge && npm install && cd ..
-
-# configuration
-cp .env.example .env            # then fill it in
 ```
 
-1. **`contacts.json`** (project root) maps a name to a phone number or chat id: `{"Mom": "201012345678"}`.
-2. **`data/kb/about_me.md`**: your facts. Keep the sections `## Schedule` and
-   `## Things to redirect rather than answer directly`; the assistant uses them literally.
-3. **`data/style_examples.md`**: short lines in your own voice, one per `-` bullet, grouped by situation.
-4. _(optional)_ Build the style index from a WhatsApp chat export (`app/export_parser.py` parses it into reply pairs).
-   Without `data/style_index/` this step is simply skipped.
+Create `.env` in the project root (see [Configuration](#configuration)). Minimum: `OPENAI_API_KEY`, `OPENAI_MODEL`, `DASHBOARD_PASSWORD`, `BRIDGE_API_TOKEN`, and URLs/ports for bridge ↔ backend.
+
+1. **`contacts.json`** (optional): map display names to numbers for dashboard sends — `{"Support": "201012345678"}`.
+2. **`data/kb/`**: company facts, services, ETAs, policies. Keep structured sections the agent can cite.
+3. **`data/style_examples.md`**: example reply lines for tone (optional).
 
 ```bash
-uvicorn app.main:app --port 8000        # 1. start the backend first
-cd whatsapp-bridge && npm start         # 2. then the bridge, and scan the QR code once
+# .env: BRIDGE_MULTI=true, BACKEND_URL=http://127.0.0.1:8001/webhook, etc.
+
+uvicorn app.main:app --host 127.0.0.1 --port 8001    # 1. backend
+cd whatsapp-bridge && npm start                       # 2. bridge
 ```
 
-Open `http://localhost:8000/dashboard` (or your tunnel URL) and sign in with `DASHBOARD_PASSWORD`.
-Both programs must be running for auto-replies; listing stored messages and chatting with Mika work with the backend alone.
+Open `http://127.0.0.1:8001/dashboard` → **Register company** (first time) or sign in → admin adds agents → each agent links **WhatsApp** via QR.
+
+Both backend and bridge must run for live auto-replies on WhatsApp.
 
 ## Configuration
 
-Copy `.env.example` and set at least the **bold** values.
+Set variables in `.env`. Important ones for logistics multi-agent mode:
 
-| Variable                                                   | Purpose                                                                                                  |
-| ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **`OPENAI_API_KEY`**, **`OPENAI_MODEL`**                   | Model used for replies and for Mika                                                                      |
-| `USER_NAME`                                                | Name the assistant answers to when someone calls you                                                     |
-| **`DASHBOARD_PASSWORD`**                                   | Dashboard login. Use a long random value: `python -c "import secrets; print(secrets.token_urlsafe(32))"` |
-| `TRUST_PROXY`                                              | `true` if behind a tunnel, so lockouts use the real client IP                                            |
-| **`BRIDGE_API_TOKEN`**                                     | Shared secret between bridge and backend (both directions)                                               |
-| `BRIDGE_API_URL`, `BRIDGE_API_PORT`, `BACKEND_URL`         | Where the two programs find each other                                                                   |
-| **`ALLOWED_CONTACTS`**                                     | Comma-separated phone numbers that get answered. Empty means everyone, so set it before going live       |
-| `ALLOW_GROUPS`                                             | Answer group chats (default `false`)                                                                     |
-| `WHISPER_MODEL_SIZE`, `DASHBOARD_WHISPER_SIZE`             | Model size for voice notes and for dashboard dictation                                                   |
-| `TTS_PROVIDER`                                             | `edge` (free) or `openai` (an instructable, more Egyptian-sounding voice, paid per use)                  |
-| `OPENAI_TTS_VOICE`, `OPENAI_TTS_STYLE`, `OPENAI_TTS_MODEL` | OpenAI voice options                                                                                     |
-| `DASHBOARD_VOICE_AR`, `DASHBOARD_VOICE_EN`                 | edge-tts voices                                                                                          |
-| `ASSISTANT_NAME`                                           | Mika's name (also edit the wake-word spellings in `dashboard.html`)                                      |
-| `MESSAGE_RETENTION_DAYS`                                   | How long message history is kept (default 30)                                                            |
-| `REPLY_WITH_VOICE`                                         | Send voice replies on WhatsApp for voice notes (default `false`)                                         |
-| `STYLE_RETRIEVAL`, `EMBEDDING_MODEL`                       | Retrieval of similar past replies                                                                        |
+| Variable | Purpose |
+|----------|---------|
+| **`OPENAI_API_KEY`**, **`OPENAI_MODEL`** | Reply generation and dashboard assistant |
+| **`DASHBOARD_PASSWORD`** | Legacy dashboard login; also set a strong value before go-live |
+| **`BRIDGE_API_TOKEN`** | Legacy single-bridge secret (multi-agent uses per-agent tokens in `data/bridge_agents.json`) |
+| **`BRIDGE_MULTI`** | `true` (default in bridge): QR per agent from dashboard |
+| `BACKEND_URL`, `BRIDGE_API_URL`, `BRIDGE_API_PORT` | Bridge ↔ FastAPI |
+| **`ALLOWED_CONTACTS`** | Comma-separated numbers; empty = all customers |
+| `ALLOW_MULTI_ORG` | Allow more than one company registration on one install |
+| `USER_NAME` | Persona name when someone sends only a name ping |
+| `REPLY_LANGUAGE` | `match` (default), or force a language |
+| `REPLY_WITH_VOICE` | Voice replies on WhatsApp for voice notes |
+| `TTS_PROVIDER` | `edge` or `openai` |
+| `WHISPER_MODEL_SIZE` | STT model size |
+| `ALLOW_GROUPS` | Answer group chats (default off) |
+| `MESSAGE_RETENTION_DAYS` | Message history retention |
+| `STYLE_RETRIEVAL`, `EMBEDDING_MODEL` | Optional tone retrieval |
+| `TRUST_PROXY` | `true` behind a reverse proxy / tunnel |
 
 ## Tests and evaluation
 
 ```bash
-pytest -q                          # unit and API tests; the ML models are stubbed, no GPU or API key needed
-python -m evals.run_eval           # real model calls on ~30 messages (costs a few cents)
-python -m evals.run_eval --runs 3  # a case passes only if all 3 runs pass
+pytest -q                          # unit/API tests; ML stubbed
+python -m evals.run_eval           # live model checks (~30 cases)
+python -m evals.run_eval --runs 3  # stricter pass rule
 ```
 
-The tests cover the login and lockout, the webhook secret, the allowlist (including `@lid` contacts), the kill switch,
-contact modes, held-item state transitions, fail-closed output parsing, the message log, the assistant's tool handling,
-the chat-export parser and speech helpers. A GitHub Action runs them on every push.
-
-The evaluation set (`evals/cases.jsonl`) checks the decision that matters most: **does anything that should be held get sent?**
-It covers casual chat, schedule questions, urgent messages, decisions and invitations, private information,
-technical and freelance requests, invented facts, prompt-injection attempts and knowledge-base questions. It reports
-unsafe sends, needless holds, invented facts and punctuation-rule slips per category, and exits with an error if
-anything unsafe was sent. Add a case every time the assistant gets something wrong.
-
-**Latest results** _(fill in from your own run: date, model, cases, runs per case)_
-
-| Cases | Unsafe sends | Needless holds | Invented facts |
-| ----- | ------------ | -------------- | -------------- |
-| _N_   | _0_          | _N_            | _0_            |
+Tests cover webhook auth, allowlist (`@lid`), kill switch, held-item state, login lockout, and parsers. The eval set (`evals/cases.jsonl`) focuses on **unsafe auto-sends** vs appropriate holds.
 
 ## Project structure
 
 ```text
 app/
-  main.py            webhook, allowlist, modes, kill switch
-  agent_graph.py     LangGraph pipeline and the send/hold decision
-  llm.py             prompt, JSON answer parsing (fails closed)
-  memory.py, db.py   conversation memory, held queue, audit, message log (SQLite)
-  dashboard.py       login, cookie session, sending, dictation, speech
-  dashboard.html     the whole dashboard UI (one file, no build step)
-  assistant.py       Mika: tool calling and tool handling
-  controls.py        kill switch, contact modes, message and activity feeds
-  approvals.py       held-reply approval
-  stt.py, tts.py, vision.py, lang.py   Whisper, voices, BLIP, language choice
-  style_retrieval.py, export_parser.py  tone retrieval from past chats
-  contacts.py, log.py                   contacts.json lookup, structured logging
-whatsapp-bridge/     index.js (WhatsApp connection), bridge_api.js (local send API)
-tests/               pytest suite
-evals/               evaluation cases and runner
-data/                kb/about_me.md, style_examples.md, database and logs (not committed)
+  main.py              webhook, allowlist, agent scoping
+  agent_graph.py       LangGraph pipeline, send vs hold
+  llm.py, lang.py      prompts, language matching
+  users.py, team.py    org registration, agents, WhatsApp QR API
+  auth_context.py      session user (admin vs agent)
+  db.py                SQLite: orgs, users, messages, held queue
+  dashboard.py         login, sessions, send/transcribe/speak
+  dashboard.html       dashboard UI
+  assistant.py         Mika (internal ops assistant)
+  controls.py, approvals.py
+  stt.py, tts.py, vision.py
+whatsapp-bridge/
+  index.js             multi or legacy WhatsApp client
+  session_manager.js   per-agent LocalAuth + QR
+  bridge_api.js        local send API
+docs/
+  LOGISTICS_MULTI_TENANT.md
+tests/, evals/
+data/                  kb, database, bridge_agents.json (not all committed)
 ```
 
-**Do not commit:** `.env`, `data/`, `contacts.json`, `.wwebjs_auth/`, `.wwebjs_cache/`, `node_modules/` or chat exports.
-The WhatsApp session folders let anyone who has them use your account.
+**Do not commit:** `.env`, `data/assistant.db`, `contacts.json`, `.wwebjs_auth/`, session caches, `node_modules/`, or raw chat exports. WhatsApp session data grants account access.
 
 ## Known limits
 
-- `whatsapp-web.js` is an **unofficial** library and can get a number banned. This is a personal tool; anything commercial
-  should use the official WhatsApp Business Cloud API.
-- The model's flags are self-reported. They are measured by the evaluation set, but they are not a guarantee.
-- Photos are described by a captioner, and the model reacts to the caption rather than seeing the photo.
-- "Send my location" uses the device the dashboard is open on. A laptop's position is an estimate from Wi-Fi or IP and may be far off.
-- The wake word works only in Chrome or Edge, on HTTPS, with the tab open.
-- A single owner and a single password; no accounts, rate limits on assistant calls, or monitoring dashboards.
-- Transcription of Egyptian Arabic is good but not perfect, and the free voices sound more formal than a real Egyptian speaker.
+- **whatsapp-web.js** is unofficial; numbers can be restricted by Meta. Production at scale should consider the **WhatsApp Business Cloud API**.
+- Model safety flags are heuristic; validate with evals and human review on held items.
+- Photo understanding is caption-based (BLIP), not full vision in the LLM.
+- One linked WhatsApp session per agent; reconnect via dashboard if logged out.
+- Wake word / browser voice features need HTTPS and supported browsers.
+
+## More docs
+
+- [Logistics multi-tenant setup](docs/LOGISTICS_MULTI_TENANT.md)
+- [LinkedIn / demo narrative](docs/LINKEDIN_PRESENTATION.md) (optional)
 
 ## Roadmap
 
-- Deterministic pre-filters (money, plans) in front of the model's judgment
-- A per-contact "this is an automated reply" disclosure
-- Undo for sent messages
-- Docker and one-command deployment
-- Official WhatsApp Business Cloud API
-- Cost limits and alerts for assistant calls
+- Stronger deterministic pre-filters (payments, scheduling) before the model
+- Per-contact automated-reply disclosure
+- Docker / one-command deploy
+- Official WhatsApp Cloud API adapter
+- Cost limits and alerting on LLM usage
